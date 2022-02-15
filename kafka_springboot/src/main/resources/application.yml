@@ -16,6 +16,8 @@ spring:
       auto-offset-reset: earliest # 新消费组从头开始消费
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max-poll-records: 500
+      auto-commit-interval: 1000
     listener:
       # RECORD 当每一条记录被消费者监听器（ListenerConsumer） 处理之后提交
       # BATCH 当每一批poll()的数据被消费者监听器（ListenerConsumer） 处理之后提交

@@ -57,27 +57,6 @@ public class Consumer1 {
 //            consumer.seekToBeginning(Arrays.asList(new TopicPartition(TOPIC,0)));
             //回溯到指定偏移量
 //            consumer.seek(new TopicPartition(TOPIC,0),3);
-            //回溯到指定时间点
-            long fetchDataTime = new Date().getTime()-1000*60*60;
-            List<PartitionInfo> topPartitions = consumer.partitionsFor(TOPIC);
-            Map<TopicPartition,Long> map = new HashMap<>();
-            for (PartitionInfo par : topPartitions) {
-                map.put(new TopicPartition(TOPIC,par.partition()),fetchDataTime);
-            }
-            Map<TopicPartition, OffsetAndTimestamp> parMap = consumer.offsetsForTimes(map);
-            for (Map.Entry<TopicPartition, OffsetAndTimestamp> entry : parMap.entrySet()) {
-                TopicPartition key = entry.getKey();
-                OffsetAndTimestamp value = entry.getValue();
-                if( key == null || value == null) continue;
-                Long offset = value.offset();
-                System.out.println("partition-" + key.partition() + "|offset-" + offset);
-                System.out.println();
-                if(value!=null){//根据消费力的timestamp确定offset
-                    consumer.assign(Arrays.asList(key));
-                    consumer.seek(key,offset);
-
-                }
-            }
 
             while(true){
                 //长轮询poll消息
