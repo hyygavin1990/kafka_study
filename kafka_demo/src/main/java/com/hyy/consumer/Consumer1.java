@@ -37,11 +37,29 @@ public class Consumer1 {
 //            properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,"1000");
             properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
             properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+
+            //一次poll最大拉取消息的条数，可以根据消费速度的快慢来设置
+            properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,500);
+            //如果两次poll的时间如果超出了30s的时间间隔，kafka会认为其消费能力过弱，将其踢出消费组。将分区分配给其他消费者
+            properties.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30*1000);
+
+            //kafka如果超过10s没有收到消费者的心跳，则会把消费者踢出消费组，进行rebalance,将分区费赔给其他消费者
+            properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10*1000);
+            //consumer给broker发送心跳的间隔时间
+            properties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 30*1000);
+
+
+
             //创建一个消费者
             consumer = new KafkaConsumer<>(properties);
             //订阅主题列表
             consumer.subscribe(Arrays.asList(TOPIC));
             while(true){
+                //长轮询poll消息
+                //消费者一次poll500条消息，这里设置了长轮询的时间为1000ms
+                //如果一次poll到了500条
+                //如果一次没有poll到500条，且时间在1秒内，那么长轮询继续poll,要么poll到500条，要么到1s
+                //如果多次poll都没到500条，且1秒时间到了， 那么直接执行for循环
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
                 for (ConsumerRecord<String, String> record : records) {
                     System.out.printf("收到消息：partition = %d, offset = %d, key = %s, value =%s%n",record.partition(),record.offset(),record.key(),record.value());
