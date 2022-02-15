@@ -56,13 +56,17 @@ public class Producer1 {
              */
             properties.put(ProducerConfig.LINGER_MS_CONFIG,10);
 
-
-            producer = new KafkaProducer<String, String>(properties);
-            Order order = new Order(1L,1L);
+            producer = new KafkaProducer<>(properties);
+            Order order = new Order(System.currentTimeMillis(),1L);
             String message = JSON.toJSONString(order);
 //            ProducerRecord<String,String> record = new ProducerRecord<String,String>(TOPIC,message);
             //未指明分区的情况，根据发送的key来确定分区，具体公式为 hash(key)%partitionNum
-            ProducerRecord<String,String> record = new ProducerRecord<String,String>(TOPIC,"mykey",message);
+            //无分区、无键值
+//            ProducerRecord<String,String> record = new ProducerRecord<>(TOPIC, message);
+            //无分区、有键值 根据键值 hash(key)%partitionNum来确定分区
+//            ProducerRecord<String,String> record = new ProducerRecord<>(TOPIC, "mykey", message);
+            //有分区、有键值
+            ProducerRecord<String,String> record = new ProducerRecord<>(TOPIC,0, "mykey", message);
             RecordMetadata metaData = producer.send(record).get();
             System.out.println("同步方式发送消息：" + "topic-"+metaData.topic() + "|partition-" + metaData.partition() + "|offset-" + metaData.offset());
 
