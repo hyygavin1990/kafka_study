@@ -48,7 +48,7 @@ public class Consumer2 {
             //创建一个消费者
             consumer = new KafkaConsumer<>(properties);
             //回溯到指定时间点
-            long fetchDataTime = new Date().getTime()-1000*60*60;
+            long fetchDataTime = new Date().getTime()-1000*60*60*10;
             List<PartitionInfo> topPartitions = consumer.partitionsFor(TOPIC);
             Map<TopicPartition,Long> map = new HashMap<>();
             for (PartitionInfo par : topPartitions) {

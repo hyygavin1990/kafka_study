@@ -66,7 +66,7 @@ public class Producer1 {
             //无分区、有键值 根据键值 hash(key)%partitionNum来确定分区
 //            ProducerRecord<String,String> record = new ProducerRecord<>(TOPIC, "mykey", message);
             //有分区、有键值
-            ProducerRecord<String,String> record = new ProducerRecord<>(TOPIC,0, "mykey", message);
+            ProducerRecord<String,String> record = new ProducerRecord<>(TOPIC,1, "mykey", message);
             RecordMetadata metaData = producer.send(record).get();
             System.out.println("同步方式发送消息：" + "topic-"+metaData.topic() + "|partition-" + metaData.partition() + "|offset-" + metaData.offset());
 
