@@ -50,9 +50,9 @@ public class Producer1 {
             properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG,33554432);
             //kafka本地线程会从缓冲区取数据，批量发送到broker,设置批量发送消息的大小，默认值是16384，即16kb,就是说一个batch满了16kb就发送出去
             properties.put(ProducerConfig.BATCH_SIZE_CONFIG,16384);
-            /**
-             * 默认值是0，意思就是消息必须立即被发送，但这样会影响性能，一般设置10ms左右，就是说这个消息发送完后会进入本地的一个batch,如果10ms内，这个batch满了16kb,
-             * 就会随batch一起被发送出去，如果10ms内，batch没满，那么也必须把消息发送出去，不能让消息的发送延迟时间太长
+            /*
+              默认值是0，意思就是消息必须立即被发送，但这样会影响性能，一般设置10ms左右，就是说这个消息发送完后会进入本地的一个batch,如果10ms内，这个batch满了16kb,
+              就会随batch一起被发送出去，如果10ms内，batch没满，那么也必须把消息发送出去，不能让消息的发送延迟时间太长
              */
             properties.put(ProducerConfig.LINGER_MS_CONFIG,10);
 
