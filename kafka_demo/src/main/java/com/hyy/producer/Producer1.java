@@ -35,10 +35,28 @@ public class Producer1 {
               ack等于-1 或者 all ：意味着producer得到follower确认，才发送下一条数据
              */
             properties.put(ProducerConfig.ACKS_CONFIG,"all");
+
             //把发送的key序列化成字节数组
             properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             //把发送的value序列化成字节数组
             properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
+
+            //由于网络波动，可能会发送失败，这里提供了重试机制，默认是3次
+            properties.put(ProducerConfig.RETRIES_CONFIG,5);
+            //设置重试的间隔默认是100ms
+            properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG,300);
+
+            //设置发送消息的本地缓冲区，如果设置了该缓冲区，消息会先发送到本地缓冲区，可以提高消息发送性能，默认是33554432，即32MB
+            properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG,33554432);
+            //kafka本地线程会从缓冲区取数据，批量发送到broker,设置批量发送消息的大小，默认值是16384，即16kb,就是说一个batch满了16kb就发送出去
+            properties.put(ProducerConfig.BATCH_SIZE_CONFIG,16384);
+            /**
+             * 默认值是0，意思就是消息必须立即被发送，但这样会影响性能，一般设置10ms左右，就是说这个消息发送完后会进入本地的一个batch,如果10ms内，这个batch满了16kb,
+             * 就会随batch一起被发送出去，如果10ms内，batch没满，那么也必须把消息发送出去，不能让消息的发送延迟时间太长
+             */
+            properties.put(ProducerConfig.LINGER_MS_CONFIG,10);
+
+
             producer = new KafkaProducer<String, String>(properties);
             Order order = new Order(1L,1L);
             String message = JSON.toJSONString(order);
